@@ -41,7 +41,8 @@ public class UploadController {
             @RequestHeader HttpHeaders headers,
             @RequestParam(value = "avatar", required = false) MultipartFile avatar,
             @RequestParam(value = "email") String email,
-            @RequestParam(value = "website") String website
+            @RequestParam(value = "website") String website,
+            @RequestParam(value = "password", required = false) String password
     ) {
         User authUser = null;
 
@@ -88,6 +89,11 @@ public class UploadController {
 
         // store website
         authUser.setWebsite(website);
+
+        // store password
+        if(password != null) {
+            authUser.setPassword(password);
+        }
 
         userRepository.save(authUser);
 
