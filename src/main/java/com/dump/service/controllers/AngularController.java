@@ -9,7 +9,7 @@ public class AngularController {
     /**
      * Angular request mappings
       */
-    @RequestMapping({ "/","/v/**", "/login", "/u/**", "/register", "/cp" })
+    @RequestMapping({ "/","/v/**", "/login", "/u/**", "/register", "/cp", "/archive" })
     public String index() {
         return "forward:/index.html";
     }
