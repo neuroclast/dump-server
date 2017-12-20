@@ -96,6 +96,37 @@ public class DumpAPIController {
         return new ResponseEntity(HttpStatus.OK);
     }
 
+    @PostMapping(path="/update")
+    public @ResponseBody ResponseEntity update (
+            @RequestHeader HttpHeaders headers,
+            @RequestBody Dump dump
+    ) {
+        User authUser = null;
+
+        try {
+            authUser = authUtil.verifyAuthorization(headers);
+        }
+        catch(Exception e) {
+            if(e.getMessage().equalsIgnoreCase("expired")) {
+                return new ResponseEntity(HttpStatus.I_AM_A_TEAPOT);
+            }
+        }
+
+        // verify user
+        if (authUser == null || !authUser.getUsername().equalsIgnoreCase(dump.getUsername())) {
+            return new ResponseEntity(HttpStatus.FORBIDDEN);
+        }
+
+        // make sure title is <= 250 characters
+        if(dump.getTitle().length() > 250) {
+            dump.setTitle(dump.getTitle().substring(0, 250));
+        }
+
+        dumpRepository.save(dump);
+
+        return new ResponseEntity<>(dump.getPublicId(), HttpStatus.OK);
+    }
+
     @PostMapping(path="/add")
     public @ResponseBody ResponseEntity add (
             @RequestHeader HttpHeaders headers,
@@ -106,7 +137,7 @@ public class DumpAPIController {
             User authUser = null;
 
             try {
-                authUser = authUtil.verifyAuthorization(headers, true);
+                authUser = authUtil.verifyAuthorization(headers);
             }
             catch(Exception e) {
                 if(e.getMessage().equalsIgnoreCase("expired")) {
