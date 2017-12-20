@@ -60,6 +60,42 @@ public class DumpAPIController {
         }
     }
 
+    @DeleteMapping(path="/delete")
+    public @ResponseBody ResponseEntity delete (
+            @RequestHeader HttpHeaders headers,
+            @RequestParam("publicId") String publicId
+    ) {
+        User authUser = null;
+
+        try {
+            authUser = authUtil.verifyAuthorization(headers);
+        }
+        catch(Exception e) {
+            if(e.getMessage().equalsIgnoreCase("expired")) {
+                return new ResponseEntity(HttpStatus.I_AM_A_TEAPOT);
+            }
+        }
+
+        if(authUser == null) {
+            return new ResponseEntity(HttpStatus.FORBIDDEN);
+        }
+
+        // acquire target
+        Dump target = dumpRepository.findByPublicId(publicId);
+        if(target == null) {
+            return new ResponseEntity(HttpStatus.BAD_REQUEST);
+        }
+
+        // verify dump is owned by deleting user
+        if(!target.getUsername().equalsIgnoreCase(authUser.getUsername())) {
+            return new ResponseEntity(HttpStatus.FORBIDDEN);
+        }
+
+        dumpRepository.delete(target);
+
+        return new ResponseEntity(HttpStatus.OK);
+    }
+
     @PostMapping(path="/add")
     public @ResponseBody ResponseEntity add (
             @RequestHeader HttpHeaders headers,
@@ -166,6 +202,9 @@ public class DumpAPIController {
             @RequestParam("limit") Integer limit,
             @RequestParam(value = "type", required = false) String type
     ) {
+        // ensure limit is not over 20
+        limit = Math.max(limit, 20);
+
         Sort sorter = new Sort(Sort.Direction.DESC, "id");
 
         if(type != null) {
