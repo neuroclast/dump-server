@@ -12,7 +12,7 @@ public class AngularController implements ErrorController {
     /**
      * Angular request mappings
       */
-    @RequestMapping({ "/","/v/**", "/login", "/u/**", "/register", "/cp", "/archive/**" })
+    @RequestMapping({ "/","/v/**", "/login", "/u/**", "/register", "/cp", "/archive/**", "/404" })
     public String index() {
         return "forward:/index.html";
     }
