@@ -8,6 +8,8 @@ import org.springframework.data.repository.CrudRepository;
 import org.springframework.data.repository.PagingAndSortingRepository;
 import org.springframework.stereotype.Repository;
 
+import java.util.Date;
+
 @Repository
 public interface DumpRepository extends PagingAndSortingRepository<Dump, Long> {
 
@@ -24,5 +26,7 @@ public interface DumpRepository extends PagingAndSortingRepository<Dump, Long> {
     Page<Dump[]> findByExposureOrderByIdDesc(Pageable pageable, Enumerations.Exposure exposure);
 
     Page<Dump[]> findByExposureAndTypeOrderByIdDesc(Pageable pageable, Enumerations.Exposure exposure, String type);
+
+    Dump[] findByExpirationIsAfterAndExpirationIsBefore(Date never, Date now);
 
 }

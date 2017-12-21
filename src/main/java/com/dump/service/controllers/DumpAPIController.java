@@ -18,6 +18,7 @@ import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Date;
 import java.util.Random;
 
 @CrossOrigin
@@ -42,6 +43,12 @@ public class DumpAPIController {
         Dump dump = dumpRepository.findByPublicId(id);
 
         if (dump == null) {
+            return new ResponseEntity(HttpStatus.NOT_FOUND);
+        }
+
+        // delete and return 404 if dump exists but is expired
+        if(dump.getExpiration().before(new Date()) && dump.getExpiration().after(new Date(3600))) {
+            dumpRepository.delete(dump);
             return new ResponseEntity(HttpStatus.NOT_FOUND);
         }
 
