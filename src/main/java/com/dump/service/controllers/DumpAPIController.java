@@ -14,6 +14,8 @@ import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.util.LinkedMultiValueMap;
+import org.springframework.util.MultiValueMap;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Random;
@@ -32,7 +34,11 @@ public class DumpAPIController {
     private Auth authUtil;
 
     @GetMapping(path="/view/{id}")
-    public @ResponseBody ResponseEntity view(@PathVariable("id") String id) {
+    public @ResponseBody ResponseEntity view(
+            @PathVariable("id") String id,
+            @RequestParam(value = "download", required = false) Boolean download
+    ) {
+        // TODO: add protection for private dumps
         Dump dump = dumpRepository.findByPublicId(id);
 
         if (dump == null) {
@@ -49,6 +55,17 @@ public class DumpAPIController {
                 user.setViews(user.getViews() + 1);
                 userRepository.save(user);
             }
+        }
+
+        if(download != null && download) {
+            // TODO: add content types
+            String cd = String.format("attachment; filename=\"%s.txt\"", dump.getPublicId());
+
+            MultiValueMap<String, String> headers = new LinkedMultiValueMap<>();
+            headers.add("Content-Type", "text/plain");
+            headers.add("Content-disposition", cd);
+
+            return new ResponseEntity<>(dump.getContents(), headers, HttpStatus.OK);
         }
 
         ObjectMapper mapper = new ObjectMapper();
