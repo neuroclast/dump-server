@@ -3,6 +3,10 @@ package com.dump.service.objects;
 import javax.persistence.*;
 import java.util.Date;
 
+
+/**
+ * Object to contain User information
+ */
 @Entity
 public class User {
     @Id

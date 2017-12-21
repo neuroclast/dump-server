@@ -21,6 +21,9 @@ import org.springframework.web.bind.annotation.*;
 import java.util.Date;
 import java.util.Random;
 
+/**
+ * Spring REST controller for Dump management
+ */
 @CrossOrigin
 @RestController
 @RequestMapping(path="/api/dumps")
@@ -34,6 +37,13 @@ public class DumpAPIController {
     @Autowired
     private Auth authUtil;
 
+
+    /**
+     * Handler for returning Dump data to client
+     * @param id    Public ID of Dump to query
+     * @param download  TRUE causes server to generate a download MIME type
+     * @return  HTTP Response entity on error, Dump object on success, Dump contents on success if download=TRUE
+     */
     @GetMapping(path="/view/{id}")
     public @ResponseBody ResponseEntity view(
             @PathVariable("id") String id,
@@ -84,6 +94,13 @@ public class DumpAPIController {
         }
     }
 
+
+    /**
+     * Deletes a Dump from the database
+     * @param headers   HTTP headers for authorization check
+     * @param publicId  Dump public ID to delete
+     * @return  HTTP status code of result
+     */
     @DeleteMapping(path="/delete")
     public @ResponseBody ResponseEntity delete (
             @RequestHeader HttpHeaders headers,
@@ -120,6 +137,13 @@ public class DumpAPIController {
         return new ResponseEntity(HttpStatus.OK);
     }
 
+
+    /**
+     * Updates existing Dump
+     * @param headers   HTTP headers for authorization check
+     * @param dump      Dump to update
+     * @return  HTTP status code of result
+     */
     @PostMapping(path="/update")
     public @ResponseBody ResponseEntity update (
             @RequestHeader HttpHeaders headers,
@@ -151,6 +175,13 @@ public class DumpAPIController {
         return new ResponseEntity<>(dump.getPublicId(), HttpStatus.OK);
     }
 
+
+    /**
+     * Add new Dump to database
+     * @param headers   HTTP headers for authorization check
+     * @param dump      Dump to add
+     * @return HTTP status code of result
+     */
     @PostMapping(path="/add")
     public @ResponseBody ResponseEntity add (
             @RequestHeader HttpHeaders headers,
@@ -191,6 +222,14 @@ public class DumpAPIController {
         return new ResponseEntity<>(newId, HttpStatus.OK);
     }
 
+
+    /**
+     * Retrieves all Dumps associated with a user
+     * @param headers   HTTP headers for authorization check
+     * @param username  username to query
+     * @param viewAll   TRUE returns all Dumps, FALSE only returns PUBLIC Dumps
+     * @return  Array of Dumps
+     */
     @GetMapping(path="/user")
     public @ResponseBody ResponseEntity recent(
             @RequestHeader HttpHeaders headers,
@@ -224,6 +263,13 @@ public class DumpAPIController {
         return new ResponseEntity<>(dumps, HttpStatus.OK);
     }
 
+
+    /**
+     * Retrieves list of most recent new Dumps committed to DB
+     * @param headers   HTTP headers for authorization check
+     * @param mine      TRUE if we are asking for users own Dumps
+     * @return  Array of Dumps
+     */
     @GetMapping(path="/recent")
     public @ResponseBody ResponseEntity recent(
             @RequestHeader HttpHeaders headers,
@@ -251,6 +297,14 @@ public class DumpAPIController {
         return new ResponseEntity<>(dumpRepository.findFirst10ByExposureOrderByIdDesc(Enumerations.Exposure.PUBLIC), HttpStatus.OK);
     }
 
+
+    /**
+     * Retrieves a range of Dumps from the database in pageable format
+     * @param page  Page to return to user
+     * @param limit Number of items per page
+     * @param type  Exposure to retrieve (Public, Private, Unlisted)
+     * @return  Array of Dumps
+     */
     @GetMapping(path="/range")
     public @ResponseBody ResponseEntity recent(
             @RequestParam("page") Integer page,
@@ -271,6 +325,11 @@ public class DumpAPIController {
         return new ResponseEntity<>(retPage.getContent(), HttpStatus.OK);
     }
 
+
+    /**
+     * Generates a public ID string to associate with a Dump
+     * @return  Generated public ID
+     */
     private String genPublicId() {
         String pidChars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
         StringBuilder publicId = new StringBuilder();

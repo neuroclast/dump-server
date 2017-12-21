@@ -1,12 +1,8 @@
 package com.dump.service.controllers;
 
-import com.dump.service.repositories.DumpRepository;
 import com.dump.service.repositories.UserRepository;
 import com.dump.service.objects.User;
 import com.dump.service.utils.Auth;
-import io.jsonwebtoken.Claims;
-import io.jsonwebtoken.Jws;
-import io.jsonwebtoken.Jwts;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
 import org.springframework.http.HttpHeaders;
@@ -21,6 +17,9 @@ import java.awt.image.BufferedImage;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 
+/**
+ * Spring REST controller for handling uploads
+ */
 @CrossOrigin
 @RestController
 @RequestMapping(path="/api/upload")
@@ -35,6 +34,16 @@ public class UploadController {
     @Autowired
     private Environment env;
 
+
+    /**
+     * Handles profile uploads by user
+     * @param headers   HTTP headers for authorization check
+     * @param avatar    User avatar image
+     * @param email     User email address
+     * @param website   User website
+     * @param password  User password
+     * @return  HTTP status code of result and User object if successful
+     */
     @PostMapping(path="/profile")
     public @ResponseBody
     ResponseEntity avatar (

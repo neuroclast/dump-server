@@ -16,6 +16,10 @@ import org.springframework.web.bind.annotation.*;
 import java.io.InputStream;
 import java.util.*;
 
+
+/**
+ * Spring REST controller to handle User management
+ */
 @CrossOrigin
 @RestController
 @RequestMapping(path="/api/users")
@@ -33,6 +37,12 @@ public class UserAPIController {
     @Value("classpath:t.png")
     private Resource res;
 
+
+    /**
+     * Checks to see is a username already exists in the database
+     * @param username  Username to check
+     * @return  HTTP status of result
+     */
     @GetMapping(path="/exists/{username}")
     public @ResponseBody
     ResponseEntity exists(@PathVariable("username") String username) {
@@ -45,6 +55,12 @@ public class UserAPIController {
         return new ResponseEntity(HttpStatus.OK);
     }
 
+
+    /**
+     * Gets avatar image for user
+     * @param username  User to retrieve avatar for
+     * @return  Image w/appropriate png content type
+     */
     @GetMapping(path="/avatar/{username}.png")
     public @ResponseBody
     ResponseEntity avatar(@PathVariable("username") String username) {
@@ -62,8 +78,8 @@ public class UserAPIController {
                 // TODO: don't load this every time
                 InputStream is = res.getInputStream();
                 byte[] byteArr = new byte[4096];
-                int readBytes = is.read(byteArr);
-                return new ResponseEntity<byte[]>(byteArr, headers, HttpStatus.OK);
+                is.read(byteArr);
+                return new ResponseEntity<>(byteArr, headers, HttpStatus.OK);
             }
             catch(Exception e) {
                 return new ResponseEntity(HttpStatus.INTERNAL_SERVER_ERROR);
@@ -73,9 +89,15 @@ public class UserAPIController {
         User justAvatar = new User();
         justAvatar.setAvatar(user.getAvatar());
 
-        return new ResponseEntity<byte[]>(justAvatar.getAvatar(), headers, HttpStatus.OK);
+        return new ResponseEntity<>(justAvatar.getAvatar(), headers, HttpStatus.OK);
     }
 
+
+    /**
+     * Retrieves users profile information
+     * @param username  Username to retrieve
+     * @return  User object
+     */
     @GetMapping(path="/profile")
     public @ResponseBody ResponseEntity profile(@RequestParam("username") String username) {
         User user  = userRepository.findByUsernameIgnoreCase(username);
@@ -91,6 +113,12 @@ public class UserAPIController {
         return new ResponseEntity<>(user, HttpStatus.OK);
     }
 
+
+    /**
+     * Retrieves users private profile
+     * @param headers   HTTP headers for authorization check
+     * @return  User object
+     */
     @GetMapping(path="/myprofile")
     public @ResponseBody ResponseEntity myProfile(@RequestHeader HttpHeaders headers) {
         User authUser = null;
@@ -111,6 +139,12 @@ public class UserAPIController {
         return new ResponseEntity<>(authUser, HttpStatus.OK);
     }
 
+
+    /**
+     * Creates a new user
+     * @param user User object to add to database
+     * @return HTTP status code of result, and user ID if success
+     */
     @PostMapping(path="/add")
     public @ResponseBody ResponseEntity add(@RequestBody User user) {
         // sanity check
@@ -127,6 +161,12 @@ public class UserAPIController {
         return new ResponseEntity<>(user.getId(), HttpStatus.OK);
     }
 
+
+    /**
+     * Retrieves username associated with an ID
+     * @param id    ID of user
+     * @return  Username string
+     */
     @GetMapping(path="/username")
     public @ResponseBody ResponseEntity username(@RequestParam Integer id) {
         User user = userRepository.findById(id);
@@ -138,6 +178,14 @@ public class UserAPIController {
         return new ResponseEntity<>(user.getUsername(), HttpStatus.OK);
     }
 
+
+    /**
+     * Establishes a login JWT for user
+     * @param username  Username
+     * @param password  Password
+     * @param remember  Remember user?
+     * @return  JSON containing JWT on success, Forbidden on failure
+     */
     @GetMapping(path="/login")
     public @ResponseBody ResponseEntity login(
             @RequestParam String username,
@@ -167,6 +215,6 @@ public class UserAPIController {
 
         String returnStr = String.format("{\"jwt\":\"%s\"}", compactJws);
 
-        return new ResponseEntity<String>(returnStr, HttpStatus.OK);
+        return new ResponseEntity<>(returnStr, HttpStatus.OK);
     }
 }

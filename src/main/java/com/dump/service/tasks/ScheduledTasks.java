@@ -5,13 +5,15 @@ import com.dump.service.repositories.DumpRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Bean;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
+/**
+ * Spring Component to handle scheduled tasks
+ */
 @Component
 public class ScheduledTasks {
 
@@ -21,6 +23,10 @@ public class ScheduledTasks {
     private static final Logger logger = LoggerFactory.getLogger(ScheduledTasks.class);
     private static final SimpleDateFormat dateFormat = new SimpleDateFormat("HH:mm:ss");
 
+
+    /**
+     * Task to clear expired Dumps. Runs one hour after completion of previous run.
+     */
     @Scheduled(fixedDelay = 3600000) // every hour
     public void clearExpired() {
         logger.info("Running expired cleanup task... - {}", dateFormat.format(new Date()));

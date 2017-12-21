@@ -4,6 +4,10 @@ import javax.persistence.*;
 import java.util.Date;
 import com.dump.service.Enumerations.*;
 
+
+/**
+ * Object to contain Dump information
+ */
 @Entity
 public class Dump {
     @Id

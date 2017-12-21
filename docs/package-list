@@ -1,0 +1,6 @@
+com.dump.service
+com.dump.service.controllers
+com.dump.service.objects
+com.dump.service.repositories
+com.dump.service.tasks
+com.dump.service.utils

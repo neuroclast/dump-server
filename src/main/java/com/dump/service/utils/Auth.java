@@ -14,6 +14,10 @@ import org.springframework.stereotype.Service;
 import javax.management.OperationsException;
 import java.util.Date;
 
+
+/**
+ * Logic to aid in verification of user authorization
+ */
 @Service
 public class Auth  {
 
@@ -23,10 +27,24 @@ public class Auth  {
     @Autowired
     private Environment env;
 
+    /**
+     * Verifies a users authorization headers
+     * @param headers   HTTP headers containing JWT
+     * @return  User object on success, null on failure
+     * @throws Exception    Throws "exception" if session is expired
+     */
     public User verifyAuthorization(HttpHeaders headers) throws Exception {
         return verifyAuthorization(headers, false);
     }
 
+
+    /**
+     * Verifies a users authorization headers
+     * @param headers   HTTP headers containing JWT
+     * @param preservePassword  If TRUE, User password will be returned with the authorization.
+     * @return  User object on success, null on failure
+     * @throws Exception    Throws "exception" if session is expired
+     */
     public User verifyAuthorization(HttpHeaders headers, boolean preservePassword) throws Exception {
         // sanity check
         if(!headers.containsKey("authorization")) {
