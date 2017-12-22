@@ -63,7 +63,7 @@ public interface DumpRepository extends PagingAndSortingRepository<Dump, Long> {
      * @param exposure  Exposure type
      * @return  Page object containing Dump array
      */
-    Page<Dump[]> findByExposureOrderByIdDesc(Pageable pageable, Enumerations.Exposure exposure);
+    Page<Dump[]> findByExposureAndTitleContainsAndContentsContainsOrderByIdDesc(Pageable pageable, Enumerations.Exposure exposure, String title, String contents);
 
 
     /**
@@ -73,7 +73,7 @@ public interface DumpRepository extends PagingAndSortingRepository<Dump, Long> {
      * @param type      Post type
      * @return  Page object containing Dump array
      */
-    Page<Dump[]> findByExposureAndTypeOrderByIdDesc(Pageable pageable, Enumerations.Exposure exposure, String type);
+    Page<Dump[]> findByExposureAndTypeAndTitleContainsAndContentsContainsOrderByIdDesc(Pageable pageable, Enumerations.Exposure exposure, String type, String title, String contents);
 
 
     /**

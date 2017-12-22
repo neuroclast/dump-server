@@ -58,8 +58,9 @@ public class DumpAPIController {
 
         // delete and return 404 if dump exists but is expired
         if(dump.getExpiration().before(new Date()) && dump.getExpiration().after(new Date(3600))) {
-            dumpRepository.delete(dump);
-            return new ResponseEntity(HttpStatus.NOT_FOUND);
+            // TODO: uncomment for production
+            //dumpRepository.delete(dump);
+            //return new ResponseEntity(HttpStatus.NOT_FOUND);
         }
 
         dump.setViews(dump.getViews() + 1);
@@ -134,6 +135,22 @@ public class DumpAPIController {
 
         dumpRepository.delete(target);
 
+        return new ResponseEntity(HttpStatus.OK);
+    }
+
+
+    /**
+     * Reports a Dump for whatever reasons
+     * @param id   Dump public ID
+     * @param reason    users reason
+     * @return  HTTP status code of result
+     */
+    @GetMapping(path="/report")
+    public @ResponseBody ResponseEntity report (
+            @RequestParam("id") String id,
+            @RequestParam("reason") String reason
+    ) {
+        // TODO: do something real here
         return new ResponseEntity(HttpStatus.OK);
     }
 
@@ -305,10 +322,12 @@ public class DumpAPIController {
      * @param type  Exposure to retrieve (Public, Private, Unlisted)
      * @return  Array of Dumps
      */
-    @GetMapping(path="/range")
+    @GetMapping(path="/search")
     public @ResponseBody ResponseEntity recent(
             @RequestParam("page") Integer page,
             @RequestParam("limit") Integer limit,
+            @RequestParam(defaultValue = "", value = "title", required = false) String title,
+            @RequestParam(defaultValue = "", value = "contents", required = false) String contents,
             @RequestParam(value = "type", required = false) String type
     ) {
         // ensure limit is not over 20
@@ -317,11 +336,11 @@ public class DumpAPIController {
         Sort sorter = new Sort(Sort.Direction.DESC, "id");
 
         if(type != null) {
-            Page<Dump[]> retPage = dumpRepository.findByExposureAndTypeOrderByIdDesc(new PageRequest(page, limit, sorter), Enumerations.Exposure.PUBLIC, type);
+            Page<Dump[]> retPage = dumpRepository.findByExposureAndTypeAndTitleContainsAndContentsContainsOrderByIdDesc(new PageRequest(page, limit, sorter), Enumerations.Exposure.PUBLIC, type, title, contents);
             return new ResponseEntity<>(retPage.getContent(), HttpStatus.OK);
         }
 
-        Page<Dump[]> retPage = dumpRepository.findByExposureOrderByIdDesc(new PageRequest(page, limit, sorter), Enumerations.Exposure.PUBLIC);
+        Page<Dump[]> retPage = dumpRepository.findByExposureAndTitleContainsAndContentsContainsOrderByIdDesc(new PageRequest(page, limit, sorter), Enumerations.Exposure.PUBLIC, title, contents);
         return new ResponseEntity<>(retPage.getContent(), HttpStatus.OK);
     }
 
