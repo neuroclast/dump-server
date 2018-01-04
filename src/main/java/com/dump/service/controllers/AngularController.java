@@ -16,7 +16,7 @@ public class AngularController implements ErrorController {
      * Angular request mappings
      * @return  redirects all pages to angular root
      */
-    @RequestMapping({ "/","/v/**", "/login", "/u/**", "/register", "/cp", "/archive/**", "/404" })
+    @RequestMapping({ "/","/v/**", "/login", "/u/**", "/register", "/cp", "/search/**", "/404" })
     public String index() {
         return "forward:/index.html";
     }
